@@ -1,11 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User, SocialAccount
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    # 리스트/폼에서 보일 필드를 약간 손보면 좋음
     fieldsets = UserAdmin.fieldsets + (
         ("Profile", {"fields": ("nickname",)}),
     )
+    list_display = ("username", "email", "first_name", "last_name", "is_staff", "nickname")
+
     
+@admin.register(SocialAccount)
+class SocialAccountAdmin(admin.ModelAdmin):
+    list_display = ("id", "provider", "social_id", "user")
+    search_fields = ("provider", "social_id", "user__username", "user__email")
