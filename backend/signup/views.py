@@ -9,17 +9,23 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import SocialAccount
 
+from signup.serializers import (
+    KakaoLoginRequestSerializer,
+    TokenPairResponseSerializer,
+    UserBriefSerializer,
+)
+
 User = get_user_model()
 
-
+        
 class KakaoLoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        code = request.data.get("code")
-        redirect_uri = request.data.get("redirect_uri")
-        if not code or not redirect_uri:
-            return Response({"detail": "code/redirect_uri required"}, status=400)
+        in_ser = KakaoLoginRequestSerializer(data=request.data)
+        in_ser.is_valid(raise_exception=True)
+        code = in_ser.validated_data["code"]
+        redirect_uri = in_ser.validated_data["redirect_uri"]
 
         # 1) code -> access_token
         token_url = "https://kauth.kakao.com/oauth/token"
@@ -79,6 +85,10 @@ class KakaoLoginAPIView(APIView):
                         email=email or "",
                         password=None,
                     )
+                    # 권장: 소셜 전용 계정 명시
+                    user.set_unusable_password()
+                    user.save(update_fields=["password"])
+
                     if hasattr(user, "nickname") and nickname:
                         user.nickname = nickname
                         user.save(update_fields=["nickname"])
@@ -93,13 +103,18 @@ class KakaoLoginAPIView(APIView):
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
 
-        return Response({
+        # 응답을 시리얼라이저로 감싸서 스키마 고정
+        out = {
             "access": str(access),
             "refresh": str(refresh),
             "user": {
                 "id": user.id,
                 "email": user.email,
                 "nickname": getattr(user, "nickname", nickname),
+                # 필요하면 아래 두 줄도 프론트 디버깅용으로 노출 가능
+                # "provider": "kakao",
+                # "social_id": str(kakao_id),
             }
-        }, status=200)
+        }
+        return Response(TokenPairResponseSerializer(out).data, status=200)
     
