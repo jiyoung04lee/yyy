@@ -28,6 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+KAKAO_ALLOWED_REDIRECT_URIS = [
+    "http://localhost:5173/oauth/kakao/callback",
+    # 운영 주소 이후 추가해야됨
+]
 
 # Application definition
 
