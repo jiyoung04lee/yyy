@@ -44,7 +44,9 @@ INSTALLED_APPS = [
     'mypage',
     'notice',
     'partyassist',
+    'signup',
     'users',
+    'reserve',
 ]
 
 MIDDLEWARE = [
