@@ -38,14 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'balance',
+    'game',
     'detailview',
-    'home',
-    'map',
+    'homemap',
     'mypage',
     'notice',
     'partyassist',
-    'signup',
     'users',
 ]
 
