@@ -17,7 +17,15 @@ from signup.serializers import (
 
 User = get_user_model()
 
-        
+#테스트용 뷰        
+from django.http import HttpResponse
+
+def kakao_callback_debug(request):
+    code = request.GET.get("code", "")
+    error = request.GET.get("error", "")
+    return HttpResponse(f"code={code}<br>error={error}")
+
+
 class KakaoLoginAPIView(APIView):
     permission_classes = [AllowAny]
 
