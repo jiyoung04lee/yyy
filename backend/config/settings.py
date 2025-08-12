@@ -15,6 +15,25 @@ KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET", "")
 # 로그인 회원가입 기능 활성화 여부
 ENABLE_AUTH = os.getenv("ENABLE_AUTH", "True").lower() == "true"
 
+#인증 인가 기능 활성화 여부
+
+if not ENABLE_AUTH:
+    # 인증 비활성화 모드
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": [],
+        "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    }
+else:
+    # 인증 활성화 모드
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": [
+            "rest_framework_simplejwt.authentication.JWTAuthentication",
+        ],
+        "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    }
+
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
