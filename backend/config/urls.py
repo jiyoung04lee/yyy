@@ -22,4 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("api/", include("signup.urls")),
     path("oauth/kakao/callback", kakao_callback_debug), # 카카오 로그인 콜백 URL 테스트용
+    path("api/", include(("homemap.urls", "homemap"), namespace="homemap")),
+    path("api/", include(("detailview.urls", "detailview"), namespace="detailview")),
 ]
+
+
