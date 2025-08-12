@@ -15,8 +15,7 @@
 
 // scrollpage.jsx
 import AppFrame from './components/AppFrame.jsx';
-import PhoneSheet from './scrollPage/PhoneSheet.jsx';
-import './scrollPage/PhoneSheet.css';
+import PhoneSheet from './scrollPage/Scroll_sheet.jsx';
 
 export default function App() {
   return (
