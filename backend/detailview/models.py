@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 
-class Place(models.Model):
+class Place(models.Model): # 장소에 대한 기본 정보 저장
     name = models.CharField(max_length=30)
     address = models.CharField(max_length=50, default="", blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, default=0)
@@ -11,9 +11,15 @@ class Place(models.Model):
 
     def __str__(self): return self.name
 
+class Tag(models.Model): # 파티에 대해 생성/ 생성 가능한 태그값들 저장
+    name = models.CharField(max_length=20, unique=True)
 
-class Party(models.Model):
+    def __str__(self):
+        return self.name
+
+class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생성
     place = models.ForeignKey(Place, on_delete=models.PROTECT, related_name="parties")
+    tags = models.ManyToManyField(Tag, related_name="parties", blank=True) #tag 추가
     title = models.CharField(max_length=50)
     max_participants = models.PositiveIntegerField(default=4)
     start_time = models.DateTimeField()
@@ -22,7 +28,7 @@ class Party(models.Model):
     def __str__(self): return f"{self.title} @ {self.place.name}"
 
 
-class Participation(models.Model):
+class Participation(models.Model): # 개별 파티마다의 참여자 저장
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="participations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="party_participations")
 
