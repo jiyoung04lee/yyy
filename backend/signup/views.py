@@ -30,6 +30,21 @@ class KakaoLoginAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        if not settings.ENABLE_AUTH:
+            # 인증 비활성화 모드 → 그냥 더미 토큰과 유저 반환
+            user = User.objects.first()  # 첫 번째 유저를 가짜 로그인으로 사용
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+            return Response({
+                "access": str(access),
+                "refresh": str(refresh),
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "nickname": getattr(user, "nickname", ""),
+                }
+            }, status=200)
+        
         in_ser = KakaoLoginRequestSerializer(data=request.data)
         in_ser.is_valid(raise_exception=True)
         code = in_ser.validated_data["code"]
