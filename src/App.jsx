@@ -1,17 +1,31 @@
+// partysmall 목록 
+// import AppFrame from './components/AppFrame.jsx';
+// import PartySmall from './partysmall_com/PartySamll.jsx';
+
+// export default function App() {
+//   return (
+//     <AppFrame>
+//       <div style={{ padding: 16 }}>
+//         <PartySmall />
+//       </div>
+//     </AppFrame>
+//   );
+// }
+
+
+// scrollpage.jsx
 import AppFrame from './components/AppFrame.jsx';
+import PhoneSheet from './scrollPage/PhoneSheet.jsx';
+import './scrollPage/PhoneSheet.css';
 
 export default function App() {
   return (
     <AppFrame>
-      {/* 여기에 네 UI 컴포넌트들 넣기 */}
-      <div>
+      <div className="phone-stage">
+        {/* 여기 배경(지도나 이미지) 넣어도 됨 */}
+        <PhoneSheet />
       </div>
     </AppFrame>
   );
 }
-
-
-
-
-
 
