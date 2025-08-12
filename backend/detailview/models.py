@@ -21,7 +21,7 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
     place = models.ForeignKey(Place, on_delete=models.PROTECT, related_name="parties")
     tags = models.ManyToManyField(Tag, related_name="parties", blank=True) #tag 추가
     title = models.CharField(max_length=50)
-    description = models.TextField(default="")
+    description = models.TextField(default="") # 파티에 대한 설명
     max_participants = models.PositiveIntegerField(default=4)
     start_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True) # created_at을 기준으로 start_time이 더 이후여야 함
