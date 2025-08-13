@@ -1,18 +1,3 @@
-// partysmall 목록 
-// import AppFrame from './components/AppFrame.jsx';
-// import PartySmall from './partysmall_com/PartySamll.jsx';
-
-// export default function App() {
-//   return (
-//     <AppFrame>
-//       <div style={{ padding: 16 }}>
-//         <PartySmall />
-//       </div>
-//     </AppFrame>
-//   );
-// }
-
-
 // scrollpage.jsx
 import AppFrame from './components/AppFrame.jsx';
 import PhoneSheet from './scrollPage/Scroll_sheet.jsx';
@@ -27,4 +12,3 @@ export default function App() {
     </AppFrame>
   );
 }
-
