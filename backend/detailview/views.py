@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -9,18 +9,21 @@ from .serializers import PartyListSerializer, PartyDetailSerializer
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [AllowAny]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["start_time", "created_at"]  # ?ordering=-start_time 같은 정렬 허용
+    ordering = ["start_time"]                       # 기본 다가오는 순
     permission_classes = [AllowAny]
 
     def get_queryset(self): # 파티 목록 조회 가능
-        return (
+        qs =(
             Party.objects
             .select_related("place")
-            .prefetch_related("tags", "participations__user")
-            .annotate(applied_count=Count("participations"))
-            .order_by("start_time")
+            .prefetch_related("tags")
+            .annotate(applied_count=Count("participations",distinct=True))
         )
-
+        return qs
+    
     def get_serializer_class(self): # 파티 상세 정보 조회 가능
         if self.action == "retrieve":
             return PartyDetailSerializer
