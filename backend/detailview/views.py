@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.db.models import Count
 from .models import Party, Participation
 from .serializers import PartyListSerializer, PartyDetailSerializer
-
+from django.db import transaction
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
@@ -40,7 +40,7 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
         tag = params.get("tag")
         if tag:
             qs = qs.filter(tags__name=tag)
-            
+
         return qs
     
     def get_serializer_class(self): # 파티 상세 정보 조회 가능
@@ -55,19 +55,37 @@ class PartyJoinAPIView(APIView): # 파티 참가 신청
 
     def post(self, request, party_id):
         try:
-            party = Party.objects.get(pk=party_id)
+            # 1) 트랜잭션 + 행 잠금으로 레이스 방지
+            with transaction.atomic():
+                party = (
+                    Party.objects
+                    .select_for_update()           # 이 파티 row 잠금
+                    .select_related("place")
+                    .get(pk=party_id)
+                )
+
+                # 2) 중복 신청 방지
+                if Participation.objects.filter(party=party, user=request.user).exists():
+                    return Response({"detail": "이미 신청한 파티입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # 3) 정원 검사(잠금 하에서 정확)
+                current = Participation.objects.filter(party=party).count()
+                if current >= party.max_participants:
+                    return Response({"detail": "정원이 초과되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+                # 4) 참가 생성
+                Participation.objects.create(party=party, user=request.user)
+
+                # 5) 최신 인원 수 반환(프론트 즉시 반영 용도)
+                new_count = current + 1
+                return Response(
+                    {
+                        "detail": "파티 신청 완료!",
+                        "applied_count": new_count,
+                        "max_participants": party.max_participants,
+                    },
+                    status=status.HTTP_201_CREATED
+                )
         except Party.DoesNotExist:
             return Response({"detail": "파티가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
-
-        # 중복 신청 방지
-        if Participation.objects.filter(party=party, user=request.user).exists():
-            return Response({"detail": "이미 신청한 파티입니다."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 정원 초과 방지
-        if party.participations.count() >= party.max_participants:
-            return Response({"detail": "정원이 초과되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
-
-        # 참가 신청 생성
-        Participation.objects.create(party=party, user=request.user)
-        return Response({"detail": "파티 신청 완료!"}, status=status.HTTP_201_CREATED)
-    
+        
