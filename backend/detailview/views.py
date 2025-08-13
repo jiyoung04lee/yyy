@@ -22,6 +22,25 @@ class PartyViewSet(viewsets.ReadOnlyModelViewSet):
             .prefetch_related("tags")
             .annotate(applied_count=Count("participations",distinct=True))
         )
+
+        # 필터링 옵션
+        params = self.request.query_params
+        place_id = params.get("place_id")
+        if place_id:
+            qs = qs.filter(place_id=place_id)
+
+        date_from = params.get("date_from")  # ISO 문자열: 2025-08-25
+        if date_from:
+            qs = qs.filter(start_time__gte=date_from)
+
+        date_to = params.get("date_to")
+        if date_to:
+            qs = qs.filter(start_time__lte=date_to)
+
+        tag = params.get("tag")
+        if tag:
+            qs = qs.filter(tags__name=tag)
+            
         return qs
     
     def get_serializer_class(self): # 파티 상세 정보 조회 가능
