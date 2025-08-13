@@ -48,3 +48,4 @@ class PartyJoinAPIView(APIView): # 파티 참가 신청
         # 참가 신청 생성
         Participation.objects.create(party=party, user=request.user)
         return Response({"detail": "파티 신청 완료!"}, status=status.HTTP_201_CREATED)
+    
