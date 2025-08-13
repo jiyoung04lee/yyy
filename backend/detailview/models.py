@@ -1,5 +1,7 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 
 class Place(models.Model): # 장소에 대한 기본 정보 저장
     name = models.CharField(max_length=30)
@@ -8,6 +10,10 @@ class Place(models.Model): # 장소에 대한 기본 정보 저장
     longitude = models.DecimalField(max_digits=9, decimal_places=6, default=0)
     capacity = models.PositiveIntegerField(default=1)
     photo = models.ImageField(upload_to="places/", default="places/default_party.jpg")
+
+    # 정적 지도 이미지 기준 정규화 좌표
+    x_norm = models.FloatField(default=0.5, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)])
+    y_norm = models.FloatField(default=0.5, validators=[MinValueValidator(0.0), MaxValueValidator(1.0)])
 
     def __str__(self): return self.name
 
