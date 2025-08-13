@@ -1,0 +1,22 @@
+.header {
+  background-image: url('../assets/header.svg');
+  background-size: cover;        /* 이미지 크기를 헤더에 맞춤 */
+  background-position: center;   /* 중앙 정렬 */
+  width: 393px;
+  height: 101px;                   /*피그마에서 설정한 높이와 동일하게 */
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* 하단 그림자 */
+}
+
+/* 알림 버튼 클릭 영역 */
+.bell-button {
+  position: absolute;
+  top: 58%;
+  right: 18px;                    /* 오른쪽 여백 */
+  transform: translateY(-50%);
+  width: 24px;
+  height: 36px;
+  background: transparent;        /* 배경 투명 */
+  border: none;
+  cursor: pointer;
+}
