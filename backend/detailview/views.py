@@ -89,3 +89,14 @@ class PartyJoinAPIView(APIView): # 파티 참가 신청
         except Party.DoesNotExist:
             return Response({"detail": "파티가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
         
+class PartyLeaveAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, party_id):
+        deleted, _ = Participation.objects.filter(party_id=party_id, user=request.user).delete()
+        if not deleted:
+            return Response({"detail": "신청 내역이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 최신 인원 수를 반환
+        new_count = Participation.objects.filter(party_id=party_id).count()
+        return Response({"detail": "신청 취소 완료", "applied_count": new_count}, status=status.HTTP_200_OK)
