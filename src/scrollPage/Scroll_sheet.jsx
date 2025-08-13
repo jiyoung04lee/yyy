@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import './Scroll_Sheet.css';
+import PartySmall from '../partysmall_com/PartySmall.jsx';
+import PartySmallImages from '../images/partysmall.jpg';
 
 export default function PhoneSheet() {
   // useRef - 리렌더 없이 값 기억 
@@ -112,6 +114,20 @@ export default function PhoneSheet() {
     setHeightPct(goingUp ? MAX_PCT : MIN_PCT);
   };
 
+  //Partysmall 컴포넌트 넣기 
+  const parties = [
+    {
+      id: 'p1',
+      eventTitle: '#유학생과_언어교류',
+      eventDate: '2025-08-25T18:00:00',
+      placeName: '주당끼리',
+      attendees: 12,
+      capacity: 20,
+      placeImageUrl: PartySmallImages, 
+    },
+    // ...더 많은 파티
+  ];
+
   return (
     <div
       ref={sheetRef}
@@ -136,8 +152,18 @@ export default function PhoneSheet() {
         // 접혀있을 땐 시트만 드래그해야 하므로 내부 상호작용 차단
         style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}
       >
-        {/* 데모용 긴 컨텐츠 — 실제 콘텐츠로 교체하면 삭제 */}
-        <div style={{ height: 1400 }} />
+        {/* ▶ 여기부터 목록 */}
+        <ul className="party-list">
+          {parties.map(p => (
+            <li key={p.id}>
+              <PartySmall
+                {...p}
+                onClick={() => console.log('상세보기:', p.id)}
+              />
+            </li>
+          ))}
+        </ul>
+        {/* ◀ 여기까지 */}
       </div>
     </div>
   );
