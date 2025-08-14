@@ -9,6 +9,8 @@ from .serializers import PartyListSerializer, PartyDetailSerializer
 from django.db import transaction
 from .authentication import AIAuthentication
 from .models import Party, Place, Tag
+from ..utils.partyAI import generate_party_by_ai
+
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
@@ -104,31 +106,38 @@ class PartyLeaveAPIView(APIView):
         return Response({"detail": "신청 취소 완료", "applied_count": new_count}, status=status.HTTP_200_OK)
 
 class AIPartyCreateAPIView(APIView):
-    authentication_classes = [AIAuthentication]
-    permission_classes = []  # 인증만 확인하고, 권한 검사 없음
+    permission_classes = [IsAuthenticated]  # AI 인증이면 토큰 필요
 
     def post(self, request):
-        data = request.data
-
+        place_id = request.data.get("place_id")
+        if not place_id:
+            return Response({"error": "place_id가 필요합니다."}, status=400)
+        
         try:
-            place = Place.objects.get(pk=data["place_id"])
+            place = Place.objects.get(id=place_id)
         except Place.DoesNotExist:
-            return Response({"error": "존재하지 않는 장소입니다."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "존재하지 않는 장소입니다."}, status=404)
 
+        # GPT-4 호출
+        ai_data = generate_party_by_ai(place.name)
+
+        if not ai_data:
+            return Response({"error": "AI 응답 실패"}, status=500)
+
+        # 파티 생성
         party = Party.objects.create(
             place=place,
-            title=data["title"],
-            description=data.get("description", ""),
-            max_participants=data.get("max_participants", 4),
-            start_time=data["start_time"],  # ISO 포맷 예상
-            is_approved=True,  # 기본 승인
+            title=ai_data["title"],
+            description=ai_data["description"],
+            start_time=ai_data["start_time"],
+            max_participants=ai_data["max_participants"],
+            is_approved=True
         )
 
-        # 태그 연결
-        tag_names = data.get("tags", [])
-        for tag_name in tag_names:
+        # 태그 처리
+        tags = ai_data.get("tags", [])
+        for tag_name in tags:
             tag, _ = Tag.objects.get_or_create(name=tag_name)
             party.tags.add(tag)
 
-        serializer = PartyDetailSerializer(party)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"message": "AI 파티 생성 완료", "party_id": party.id})
