@@ -7,6 +7,8 @@ from django.db.models import Count
 from .models import Party, Participation
 from .serializers import PartyListSerializer, PartyDetailSerializer
 from django.db import transaction
+from .authentication import AIAuthentication
+from .models import Party, Place, Tag
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
@@ -100,3 +102,33 @@ class PartyLeaveAPIView(APIView):
         # 최신 인원 수를 반환
         new_count = Participation.objects.filter(party_id=party_id).count()
         return Response({"detail": "신청 취소 완료", "applied_count": new_count}, status=status.HTTP_200_OK)
+
+class AIPartyCreateAPIView(APIView):
+    authentication_classes = [AIAuthentication]
+    permission_classes = []  # 인증만 확인하고, 권한 검사 없음
+
+    def post(self, request):
+        data = request.data
+
+        try:
+            place = Place.objects.get(pk=data["place_id"])
+        except Place.DoesNotExist:
+            return Response({"error": "존재하지 않는 장소입니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        party = Party.objects.create(
+            place=place,
+            title=data["title"],
+            description=data.get("description", ""),
+            max_participants=data.get("max_participants", 4),
+            start_time=data["start_time"],  # ISO 포맷 예상
+            is_approved=True,  # 기본 승인
+        )
+
+        # 태그 연결
+        tag_names = data.get("tags", [])
+        for tag_name in tag_names:
+            tag, _ = Tag.objects.get_or_create(name=tag_name)
+            party.tags.add(tag)
+
+        serializer = PartyDetailSerializer(party)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
