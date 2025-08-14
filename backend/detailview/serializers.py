@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Party
+from django.utils import timezone
 
 class PartyListSerializer(serializers.ModelSerializer):
     place_id = serializers.IntegerField(source="place.id", read_only=True)
@@ -91,3 +92,13 @@ class PartyDetailSerializer(serializers.ModelSerializer): # 추후에 지도이�
             return val
         return obj.participations.count()
     
+class PartyCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Party
+        fields = ["place", "tags", "title", "description", "start_time", "max_participants"]
+
+    def validate_start_time(self, value):
+        if value <= timezone.now():
+            raise serializers.ValidationError("시작 시간은 현재보다 이후여야 합니다.")
+        return value
+
