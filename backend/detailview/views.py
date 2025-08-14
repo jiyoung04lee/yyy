@@ -7,7 +7,6 @@ from django.db.models import Count
 from .models import Party, Participation
 from .serializers import PartyListSerializer, PartyDetailSerializer
 from django.db import transaction
-from .authentication import AIAuthentication
 from .models import Party, Place, Tag
 from ..utils.partyAI import generate_party_by_ai
 
