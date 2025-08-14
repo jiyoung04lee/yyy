@@ -1,14 +1,13 @@
 import './PartySmall.css';
 
 export default function PartySmall(props) {
-  // 더 직관적인 prop 이름(기존 이름과 매핑해 하위호환 유지)
   const {
-    eventTitle    = props.title,
-    eventDate     = props.date,
-    placeName     = props.location,
-    placeImageUrl = props.thumbnailUrl,
-    attendees     = props.current ?? 0,
-    capacity      = props.capacity ?? 0,
+    eventTitle    = props.title,       // 유학생과_언어교류
+    eventDate     = props.date,        // 2025-08-25
+    placeName     = props.location,    // 주당끼리 
+    placeImageUrl = props.thumbnailUrl, 
+    attendees     = props.current ?? 0,   // 현재 참여인원
+    capacity      = props.capacity ?? 0,  // 제한 인원 
     onClickDetail = props.onClick,
   } = props;
 
@@ -19,21 +18,26 @@ export default function PartySmall(props) {
 
   return (
     <article className="party-item">
-      <div className="party-item__image">
-        <img src={placeImageUrl} alt={eventTitle} />
-        {placeName && <span className="party-item__place-badge">📍 {placeName}</span>}
+      <div className="party-item__image-wrap">
+        <img src={placeImageUrl} alt={eventTitle} className="party-item__image" />
+        {placeName && (
+          <span className="party-item__place-badge">
+            <i className="material-icons-outlined">place</i>
+            {placeName}
+          </span>
+        )}
       </div>
 
       <div className="party-item__content">
         <h3 className="party-item__title">{eventTitle}</h3>
 
         <div className="party-item__meta">
-          <span className="party-item__meta-icon" aria-hidden>🗓️</span>
+          <i className="material-icons-outlined">event</i>
           <span>{fmt}</span>
         </div>
 
         <div className="party-item__meta">
-          <span className="party-item__meta-icon" aria-hidden>✅</span>
+          <i className="material-icons-outlined">check_circle_outline</i>
           <span>{attendees}/{capacity}</span>
         </div>
 
