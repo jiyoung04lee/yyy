@@ -22,7 +22,7 @@ export default function PartySmall(props) {
         <img src={placeImageUrl} alt={eventTitle} className="party-item__image" />
         {placeName && (
           <span className="party-item__place-badge">
-            <i className="material-icons-outlined">place</i>
+            <span className="party-item__place-icon-svg" aria-label="장소 아이콘"></span>
             {placeName}
           </span>
         )}
