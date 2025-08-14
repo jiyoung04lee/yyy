@@ -20,6 +20,7 @@ def generate_party_by_ai(place_name: str) -> dict:
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
+        response_format={"type": "json_object"}, # JSON 응답 강제
     )
 
     content = response.choices[0].message.content.strip()
