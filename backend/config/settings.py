@@ -155,6 +155,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'config' / 'static',  # 직접 만든 static 폴더
+]
+
 AUTH_USER_MODEL = "users.User"
 
 # Default primary key field type
