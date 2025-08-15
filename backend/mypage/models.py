@@ -38,4 +38,14 @@ class Report(models.Model):
 
     def __str__(self):
         return f"{self.reporter.username} -> {self.reported_user.username} ({self.category})"
+
+class ExtraSetting(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='extra_setting')
+    grade = models.CharField(max_length=20)
+    college = models.CharField(max_length=50)
+    personality = models.CharField(max_length=20)
+    mbti_i_e = models.CharField(max_length=1)
+    mbti_n_s = models.CharField(max_length=1)
+    mbti_f_t = models.CharField(max_length=1)
+    mbti_p_j = models.CharField(max_length=1)
     
