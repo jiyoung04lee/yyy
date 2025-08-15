@@ -42,20 +42,30 @@ class ReportSerializer(serializers.ModelSerializer):
         validated_data['reporter'] = self.context['request'].user
         return super().create(validated_data)
 
-class ExtraSettingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExtraSetting
-        fields = [
-            'id', 'user', 'grade', 'college', 'personality',
-            'mbti_i_e', 'mbti_n_s', 'mbti_f_t', 'mbti_p_j'
-        ]
-        read_only_fields = ['id', 'user']
+class ExtraSettingFromJsonSerializer(serializers.Serializer):
+    extra = serializers.DictField()
 
-    def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        return super().create(validated_data)
+    def create(self, validated_data): #json의 키값들 확인 후 변경될 텍스트들 (현재는 임시로)
+        extra_data = validated_data.get('extra', {})
+        return ExtraSetting.objects.create(
+            user=self.context['request'].user,
+            grade=extra_data.get('grade', ''),  
+            college=extra_data.get('college', ''),
+            personality=extra_data.get('personality', ''),
+            mbti_i_e=extra_data.get('mbti', {}).get('i_e', ''),
+            mbti_n_s=extra_data.get('mbti', {}).get('n_s', ''),
+            mbti_f_t=extra_data.get('mbti', {}).get('f_t', ''),
+            mbti_p_j=extra_data.get('mbti', {}).get('p_j', ''),
+        )
 
     def update(self, instance, validated_data):
-        # user는 변경 불가
-        validated_data.pop('user', None)
-        return super().update(instance, validated_data)
+        extra_data = validated_data.get('extra', {})
+        instance.grade = extra_data.get('grade', instance.grade)
+        instance.college = extra_data.get('college', instance.college)
+        instance.personality = extra_data.get('personality', instance.personality)
+        instance.mbti_i_e = extra_data.get('mbti', {}).get('i_e', instance.mbti_i_e)
+        instance.mbti_n_s = extra_data.get('mbti', {}).get('n_s', instance.mbti_n_s)
+        instance.mbti_f_t = extra_data.get('mbti', {}).get('f_t', instance.mbti_f_t)
+        instance.mbti_p_j = extra_data.get('mbti', {}).get('p_j', instance.mbti_p_j)
+        instance.save()
+        return instance
