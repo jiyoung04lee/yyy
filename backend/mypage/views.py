@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from .models import Review, Report, ExtraSetting
 from .serializers import ReviewSerializer, ReportSerializer, ExtraSettingFromJsonSerializer
 from .permissions import IsParticipantOrAdmin, IsOwner
-
+from detailview.models import Participation
 
 # -------------------------
 # 공통 베이스 뷰: 생성만 가능
@@ -91,3 +91,32 @@ class ExtraSettingViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except ExtraSetting.DoesNotExist:
             return Response({"detail": "추가 설정이 존재하지 않습니다."}, status=404)
+
+
+class MypageMainViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def main(self, request):
+        user = request.user
+        extra_setting = getattr(user, 'extra_setting', None)
+
+        data = {
+            "name": user.username,  # 이름
+            "profile_image": user.profile_image.url if getattr(user, 'profile_image', None) else None,
+            "intro": getattr(user, 'intro', ''),  # 한줄소개로 user 모델에서 수정 및 추가
+            "grade": extra_setting.grade if extra_setting else None,
+            "college": extra_setting.college if extra_setting else None,
+            "personality": extra_setting.personality if extra_setting else None,
+            "mbti": {
+                "i_e": extra_setting.mbti_i_e if extra_setting else None,
+                "n_s": extra_setting.mbti_n_s if extra_setting else None,
+                "f_t": extra_setting.mbti_f_t if extra_setting else None,
+                "p_j": extra_setting.mbti_p_j if extra_setting else None,
+            },
+            "points": getattr(user, 'points', 0),
+            "participation_count": Participation.objects.filter(user=user).count(),
+            "warnings": getattr(user, 'warnings', 0)
+        }
+        return Response(data)
+    
