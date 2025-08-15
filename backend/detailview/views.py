@@ -140,3 +140,4 @@ class AIPartyCreateAPIView(APIView):
             party.tags.add(tag)
 
         return Response({"message": "AI 파티 생성 완료", "party_id": party.id})
+
