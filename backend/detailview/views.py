@@ -8,7 +8,7 @@ from .models import Party, Participation
 from .serializers import PartyListSerializer, PartyDetailSerializer
 from django.db import transaction
 from .models import Party, Place, Tag
-from ..utils.partyAI import generate_party_by_ai
+from utils.partyAI import generate_party_by_ai
 
 
 class PartyViewSet(viewsets.ReadOnlyModelViewSet):
