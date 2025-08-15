@@ -41,3 +41,21 @@ class ReportSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['reporter'] = self.context['request'].user
         return super().create(validated_data)
+
+class ExtraSettingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExtraSetting
+        fields = [
+            'id', 'user', 'grade', 'college', 'personality',
+            'mbti_i_e', 'mbti_n_s', 'mbti_f_t', 'mbti_p_j'
+        ]
+        read_only_fields = ['id', 'user']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        # user는 변경 불가
+        validated_data.pop('user', None)
+        return super().update(instance, validated_data)
