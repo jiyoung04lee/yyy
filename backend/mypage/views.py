@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from .models import Review, Report, ExtraSetting
 from .serializers import ReviewSerializer, ReportSerializer, ExtraSettingFromJsonSerializer
 from .permissions import IsParticipantOrAdmin, IsOwner
-from detailview.models import Participation
+from detailview.models import Participation, Party
 
 # -------------------------
 # 공통 베이스 뷰: 생성만 가능
@@ -128,4 +128,34 @@ class MypageMainViewSet(viewsets.ViewSet):
             "warnings": getattr(user, 'warnings', 0),
         }
         return Response(data)
-    
+
+
+class MypageParticipationViewSet(viewsets.ViewSet):
+    """
+    마이페이지 참여 이력 API
+    GET /api/mypage/participations/
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        user = request.user
+        participations = Participation.objects.filter(user=user).select_related('party__place')
+
+        result = []
+        for p in participations:
+            party = p.party
+            place = party.place
+
+            result.append({
+                "party_id": party.id,
+                "party_title": party.title,
+                "party_start_time": party.start_time,
+                "place_name": place.name if place else None,
+                "place_image": place.image.url if (place and place.image) else None,
+
+                # 리뷰 가능 여부: 참여했지만 아직 리뷰를 작성하지 않은 경우만 True
+                "can_review": not Review.objects.filter(user=user, party=party).exists(),
+
+            })
+
+        return Response(result)
