@@ -1,7 +1,10 @@
 from rest_framework import serializers
 from .models import Review, Report, ExtraSetting
-
 from detailview.models import Participation  # 파티 참여 테이블
+from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,3 +88,43 @@ class ExtraSettingFromJsonSerializer(serializers.Serializer):
         instance.mbti_p_j = extra_data.get('mbti', {}).get('p_j', instance.mbti_p_j)
         instance.save()
         return instance
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    # 비밀번호 변경 필드
+    new_password = serializers.CharField(write_only=True, required=False)
+    new_password_confirm = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = ['profile_image', 'intro', 'new_password', 'new_password_confirm']
+        read_only_fields = []  # 모두 수정 가능
+
+    def validate(self, attrs):
+        # 비밀번호 변경 요청이 있을 경우
+        new_pw = attrs.get('new_password')
+        new_pw_confirm = attrs.get('new_password_confirm')
+
+        if new_pw or new_pw_confirm:
+            if new_pw != new_pw_confirm:
+                raise serializers.ValidationError({"new_password_confirm": "비밀번호가 일치하지 않습니다."})
+            validate_password(new_pw)
+
+        return attrs
+
+    def update(self, instance, validated_data):
+        # 비밀번호 변경
+        new_pw = validated_data.pop('new_password', None)
+        validated_data.pop('new_password_confirm', None)
+
+        if new_pw:
+            instance.set_password(new_pw)
+
+        # 나머지 필드 업데이트 (프로필 사진, 한줄소개)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+    
+    
