@@ -1,16 +1,19 @@
 from django.db import models
 from django.conf import settings
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Review(models.Model):
     party = models.ForeignKey('detailview.Party', on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
-    q1_rating = models.PositiveSmallIntegerField()
-    q2_rating = models.PositiveSmallIntegerField()
-    q3_rating = models.PositiveSmallIntegerField()
+    q1_rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    q2_rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    q3_rating = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
     comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # 작성일 추가
 
     class Meta:
-        unique_together = ('party', 'user')  # 한 유저당 한 파티 리뷰 1개만
+        unique_together = ('party', 'user')
+        ordering = ['-created_at']  # 최신순 정렬
 
     def __str__(self):
         return f"{self.user.username} - {self.party.title} 리뷰"
