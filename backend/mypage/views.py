@@ -94,29 +94,38 @@ class ExtraSettingViewSet(viewsets.ModelViewSet):
 
 
 class MypageMainViewSet(viewsets.ViewSet):
+    """
+    마이페이지 메인 화면 API
+    GET /api/mypage/
+    """
     permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=False, methods=['get'])
-    def main(self, request):
+    def list(self, request):
         user = request.user
         extra_setting = getattr(user, 'extra_setting', None)
 
         data = {
-            "name": user.username,  # 이름
-            "profile_image": user.profile_image.url if getattr(user, 'profile_image', None) else None,
-            "intro": getattr(user, 'intro', ''),  # 한줄소개로 user 모델에서 수정 및 추가
-            "grade": extra_setting.grade if extra_setting else None,
-            "college": extra_setting.college if extra_setting else None,
-            "personality": extra_setting.personality if extra_setting else None,
+            "name": getattr(user, 'username', ''),  # 로그인한 유저 이름
+            "profile_image": (
+                user.profile_image.url if getattr(user, 'profile_image', None) else None
+            ),
+            "intro": getattr(user, 'intro', ''),  # 한줄소개
+
+            # 추가 설정 값
+            "grade": getattr(extra_setting, 'grade', None),
+            "college": getattr(extra_setting, 'college', None),
+            "personality": getattr(extra_setting, 'personality', None),
             "mbti": {
-                "i_e": extra_setting.mbti_i_e if extra_setting else None,
-                "n_s": extra_setting.mbti_n_s if extra_setting else None,
-                "f_t": extra_setting.mbti_f_t if extra_setting else None,
-                "p_j": extra_setting.mbti_p_j if extra_setting else None,
+                "i_e": getattr(extra_setting, 'mbti_i_e', None),
+                "n_s": getattr(extra_setting, 'mbti_n_s', None),
+                "f_t": getattr(extra_setting, 'mbti_f_t', None),
+                "p_j": getattr(extra_setting, 'mbti_p_j', None),
             },
+
+            # 포인트, 참여횟수, 경고
             "points": getattr(user, 'points', 0),
             "participation_count": Participation.objects.filter(user=user).count(),
-            "warnings": getattr(user, 'warnings', 0)
+            "warnings": getattr(user, 'warnings', 0),
         }
         return Response(data)
     
