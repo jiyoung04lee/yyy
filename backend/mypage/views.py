@@ -1,12 +1,13 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import Review, Report, ExtraSetting
-from .serializers import ReviewSerializer, ReportSerializer, ExtraSettingFromJsonSerializer
+from .serializers import ReviewSerializer, ReportSerializer, ExtraSettingFromJsonSerializer, ProfileUpdateSerializer
 from .permissions import IsParticipantOrAdmin, IsOwner
 from detailview.models import Participation
 from mypage.models import Review, Report
+
 # -------------------------
 # 공통 베이스 뷰: 생성만 가능
 # -------------------------
@@ -159,4 +160,17 @@ class MypageParticipationViewSet(viewsets.ViewSet):
             })
 
         return Response(result)
+
+
+class ProfileUpdateView(generics.UpdateAPIView):
+    """
+    프로필 수정 API (프로필 사진, 한줄소개, 비밀번호 변경)
+    PATCH /api/mypage/profile/
+    """
+    serializer_class = ProfileUpdateSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        # 로그인한 본인만 수정 가능
+        return self.request.user
     
