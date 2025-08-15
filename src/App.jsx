@@ -10,8 +10,8 @@ export default function App() {
     <AppFrame>
       <div className="phone-stage">
         <Header/>
-        {/* <PhoneSheet /> */}
-        <Profile/>
+        <PhoneSheet />
+        {/* <Profile/> */}
         {/* <NavBar/> */}
       </div>
     </AppFrame>
