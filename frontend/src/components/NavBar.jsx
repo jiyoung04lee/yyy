@@ -1,6 +1,5 @@
 //css 파일 따로 없이 JSX에서 스타일 적용
 import { useNavigate, useLocation } from 'react-router-dom';
-import './navbar.css';
 
 import bgHome   from '../assets/nav_home.svg?url';
 import bgMap    from '../assets/nav_map.svg?url';
@@ -23,15 +22,18 @@ export default function NavBar() {
     <div className="footer-wrap" style={{
       width: '393px',
       height: '101px',
-      position: 'fixed',
+      position: 'absolute', // fixed → absolute
+      left: 0,
       bottom: 0,
-      left: '50%',
-      transform: 'translateX(-50%)',
       boxShadow: '0 -4px 6px rgba(0,0,0,0.1)',
-      zIndex: 100,
+      zIndex: 10,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+
+      borderRadius: '0 0 16px 16px',
+      background: '#fff',
+      overflow: 'hidden',
     }}>
       <img
         src={bg}
