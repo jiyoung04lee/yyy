@@ -1,11 +1,14 @@
 .header {
   background-image: url('../assets/header.svg');
-  background-size: cover;        /* 이미지 크기를 헤더에 맞춤 */
-  background-position: center;   /* 중앙 정렬 */
+  background-size: cover;
+  background-position: center;
   width: 393px;
-  height: 101px;                   /*피그마에서 설정한 높이와 동일하게 */
-  position: fixed;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* 하단 그림자 */
+  height: 101px;
+  position: absolute; /* fixed → absolute */
+  top: 0;
+  left: 0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 /* 알림 버튼 클릭 영역 */
