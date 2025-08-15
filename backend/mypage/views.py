@@ -5,8 +5,8 @@ from rest_framework.decorators import action
 from .models import Review, Report, ExtraSetting
 from .serializers import ReviewSerializer, ReportSerializer, ExtraSettingFromJsonSerializer
 from .permissions import IsParticipantOrAdmin, IsOwner
-from detailview.models import Participation, Party
-
+from detailview.models import Participation
+from mypage.models import Review, Report
 # -------------------------
 # 공통 베이스 뷰: 생성만 가능
 # -------------------------
@@ -153,9 +153,10 @@ class MypageParticipationViewSet(viewsets.ViewSet):
                 "place_name": place.name if place else None,
                 "place_image": place.image.url if (place and place.image) else None,
 
-                # 리뷰 가능 여부: 참여했지만 아직 리뷰를 작성하지 않은 경우만 True
+                # 리뷰 여부
                 "can_review": not Review.objects.filter(user=user, party=party).exists(),
 
             })
 
         return Response(result)
+    
