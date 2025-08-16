@@ -194,3 +194,9 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 3600.0,  # 1시간마다 실행
     },
 }
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+} # 웹소켓 돌아가는지 확인하기 위해 넣은 코드
