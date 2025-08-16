@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'users',
     'reserve',
     'corsheaders',
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -170,3 +171,15 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ASGI_APPLICATION = "config.asgi.application" 
+
+# Redis 사용 (실시간 메시지 브로커)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
