@@ -39,6 +39,10 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
 class Participation(models.Model): # 개별 파티마다의 참여자 저장
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="participations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="party_participations")
+    is_standby = models.BooleanField(default=False) # 파티 보조 화면에서 게임 참여 on-off 관리
 
     class Meta:
-        unique_together = ("party", "user")  # 중복 신청 방지
+        constraints = [
+            models.UniqueConstraint(fields=['party', 'user'], name='unique_participation_per_party')
+        ]
+        
