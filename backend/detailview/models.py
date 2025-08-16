@@ -32,6 +32,7 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
     start_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True) # created_at을 기준으로 start_time이 더 이후여야 함
     is_approved = models.BooleanField(default=True)  # 해커톤에선 기본 True
+    is_cancelled = models.BooleanField(default=False)  # ✅ 취소 여부
     
     def __str__(self): return f"{self.title} @ {self.place.name}"
 
