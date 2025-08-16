@@ -11,10 +11,10 @@ body { overflow: hidden; }
   inset: 0;
   display: grid;
   place-items: center;
-  background: #fff; /* 필요하면 #000 등으로 변경 */
+  background: #fff; 
 }
 
-/* ✅ 프레임을 393×852px로 고정 */
+/* 프레임을 393×852px로 고정 */
 .phone {
   width: 393px;
   height: 852px;
@@ -37,6 +37,3 @@ body { overflow: hidden; }
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
-
-
-
