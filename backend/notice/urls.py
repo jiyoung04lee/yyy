@@ -1,7 +1,10 @@
 from rest_framework.routers import DefaultRouter
-from .views import NoticeViewSet
+from django.urls import path
+from .views import NoticeViewSet, notice_stream
 
 router = DefaultRouter()
-router.register(r'notice', NoticeViewSet, basename='notice')
+router.register(r"", NoticeViewSet, basename="notice")
 
-urlpatterns = router.urls
+urlpatterns = router.urls + [
+    path("stream/", notice_stream, name="notice-stream"),
+]
