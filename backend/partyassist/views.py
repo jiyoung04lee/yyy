@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from .permissions import IsPartyParticipant
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from .serializers import MyPartySerializer
+from .serializers import MyPartySerializer, PartyParticipantSerializer
 from django.utils.timezone import now
 from detailview.models import Party, Participation
 
@@ -60,3 +60,23 @@ class StandbyViewSet(viewsets.ViewSet):
             "participation_count": participation_count,
             "standby_count": standby_count
         }, status=status.HTTP_200_OK)
+        
+    # ✅ 참여자 리스트 조회 (파티 시작 이후만 허용)
+    @action(detail=True, methods=['get'])
+    def participants(self, request, pk=None):
+        try:
+            party = Party.objects.get(pk=pk)
+        except Party.DoesNotExist:
+            return Response({"detail": "존재하지 않는 파티입니다."}, status=404)
+
+        # 파티 시작 전이면 접근 차단
+        if party.start_time > now():
+            return Response(
+                {"detail": "파티 시작 이후에만 참여자 목록을 볼 수 있습니다."},
+                status=403
+            )
+
+        participants = Participation.objects.filter(party=party).select_related("user")
+        serializer = PartyParticipantSerializer(participants, many=True)
+        return Response(serializer.data, status=200)
+    
