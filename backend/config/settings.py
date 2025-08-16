@@ -183,3 +183,14 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+CELERY_BEAT_SCHEDULE = {
+    "party_open_1day_notices": {
+        "task": "notice.tasks.create_party_open_notices",
+        "schedule": 3600.0,  # 1시간마다 실행
+    },
+    "party_insufficient_notices": {
+        "task": "notice.tasks.create_insufficient_party_notices",
+        "schedule": 3600.0,  # 1시간마다 실행
+    },
+}
