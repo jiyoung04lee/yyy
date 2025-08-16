@@ -3,10 +3,26 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from detailview.models import Participation
 from .permissions import IsPartyParticipant
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from .serializers import MyPartySerializer
+from django.utils.timezone import now
+from detailview.models import Party, Participation
+
+class MyPartyViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = MyPartySerializer
+
+    def get_queryset(self):
+        # 내가 신청했고, 아직 시작하지 않았고, 취소되지 않은 파티만
+        return Party.objects.filter(
+            participations__user=self.request.user,
+            start_time__gt=now(),
+            is_cancelled=False   # Party 모델에 취소가 False인 경우만
+        )
+    
+    
 
 class StandbyViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated & IsPartyParticipant]
