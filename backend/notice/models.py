@@ -16,11 +16,12 @@ class Notice(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notices")
+    target_party = models.ForeignKey("detailview.Party", on_delete=models.CASCADE, null=True, blank=True, related_name="notices")
     notice_type = models.CharField(max_length=50, choices=NOTICE_TYPES)
     message = models.TextField()
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     class Meta:
         ordering = ["-created_at"]
 
