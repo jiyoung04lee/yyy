@@ -29,4 +29,5 @@ urlpatterns = [
     path("api/homemap/", include(("homemap.urls", "homemap"), namespace="homemap")),
     path("api/detailview/", include(("detailview.urls", "detailview"), namespace="detailview")),
     path("api/mypage/", include("mypage.urls")),
+    path("api/partyassist/", include(("partyassist.urls", "partyassist"), namespace="partyassist")),
 ]
