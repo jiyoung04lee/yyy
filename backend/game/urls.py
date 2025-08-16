@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import RoundAICreateView, RoundRetrieveView, VoteCreateView
 
+app_name = "game" 
+
 urlpatterns = [
     path("rounds/ai-create/", RoundAICreateView.as_view(), name="round-ai-create"), # AI기반 밸런스게임 라운드 생성
     path("rounds/<uuid:round_id>/", RoundRetrieveView.as_view(), name="round-retrieve"), # 라운드 조회
