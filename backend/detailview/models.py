@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 class Place(models.Model): # 장소에 대한 기본 정보 저장
     name = models.CharField(max_length=30)
@@ -29,6 +28,7 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
     title = models.CharField(max_length=50)
     description = models.TextField(default="") # 파티에 대한 설명
     max_participants = models.PositiveIntegerField(default=4)
+    deposit = models.PositiveIntegerField("예약금", default=0)
     start_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True) # created_at을 기준으로 start_time이 더 이후여야 함
     is_approved = models.BooleanField(default=True)  # 해커톤에선 기본 True
@@ -38,9 +38,17 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
 
 
 class Participation(models.Model): # 개별 파티마다의 참여자 저장
+    class Status(models.TextChoices):
+        PENDING_PAYMENT = "PENDING_PAYMENT", "결제 대기"
+        CONFIRMED = "CONFIRMED", "참가 확정"
+        CANCELED = "CANCELED", "참가 취소"
+
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="participations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="party_participations")
     is_standby = models.BooleanField(default=False) # 파티 보조 화면에서 게임 참여 on-off 관리
+    status = models.CharField("상태", max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT) # 결제 대기 상태로 시작
+    created_at = models.DateTimeField(auto_now_add=True) # 참여 신청 시각 (이걸기반으로 결제 대기 시간 제한)
+    paid_at = models.DateTimeField("결제일시", null=True, blank=True) # 결제 완료 시각
 
     class Meta:
         constraints = [
