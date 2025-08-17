@@ -44,9 +44,9 @@ class Participation(models.Model): # 개별 파티마다의 참여자 저장
 
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="participations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="party_participations")
-    status = models.CharField("상태", max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT)
-    created_at = models.DateTimeField(auto_now_add=True)
-    paid_at = models.DateTimeField("결제일시", null=True, blank=True)
+    status = models.CharField("상태", max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT) # 결제 대기 상태로 시작
+    created_at = models.DateTimeField(auto_now_add=True) # 참여 신청 시각 (이걸기반으로 결제 대기 시간 제한)
+    paid_at = models.DateTimeField("결제일시", null=True, blank=True) # 결제 완료 시각
 
     class Meta:
         unique_together = ("party", "user")  # 중복 신청 방지
