@@ -4,6 +4,7 @@ from django.conf import settings
 
 class User(AbstractUser):
     nickname = models.CharField(max_length=30, blank=True)
+    points = models.PositiveIntegerField("포인트", default=0)
 
     def __str__(self):
         return self.username or f"user-{self.pk}"
