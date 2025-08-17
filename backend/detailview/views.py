@@ -3,7 +3,7 @@ from rest_framework import viewsets, status, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from django.db.models import Count
+from django.db.models import Count, F
 from .models import Party, Participation
 from .serializers import PartyListSerializer, PartyDetailSerializer
 from django.db import transaction
@@ -58,34 +58,36 @@ class PartyJoinAPIView(APIView): # 파티 참가 신청
 
     def post(self, request, party_id):
         try:
-            # 1) 트랜잭션 + 행 잠금으로 레이스 방지
             with transaction.atomic():
-                party = (
-                    Party.objects
-                    .select_for_update()           # 이 파티 row 잠금
-                    .select_related("place")
-                    .get(pk=party_id)
-                )
+                party = Party.objects.select_for_update().get(pk=party_id)
 
-                # 2) 중복 신청 방지
                 if Participation.objects.filter(party=party, user=request.user).exists():
                     return Response({"detail": "이미 신청한 파티입니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # 3) 정원 검사(잠금 하에서 정확)
-                current = Participation.objects.filter(party=party).count()
-                if current >= party.max_participants:
+                # 정원 검사 시, 확정된 인원만 카운트
+                confirmed_count = Participation.objects.filter(party=party, status=Participation.Status.CONFIRMED).count()
+                if confirmed_count >= party.max_participants:
                     return Response({"detail": "정원이 초과되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-                # 4) 참가 생성
-                Participation.objects.create(party=party, user=request.user)
+                # 예약금 여부에 따라 상태 분기
+                if party.deposit > 0:
+                    participation_status = Participation.Status.PENDING_PAYMENT
+                    message = "예약 신청이 완료되었습니다. 예약금을 결제해주세요."
+                else:
+                    participation_status = Participation.Status.CONFIRMED
+                    message = "예약이 확정되었습니다."
 
-                # 5) 최신 인원 수 반환(프론트 즉시 반영 용도)
-                new_count = current + 1
+                participation = Participation.objects.create(
+                    party=party, 
+                    user=request.user,
+                    status=participation_status
+                )
+
                 return Response(
                     {
-                        "detail": "파티 신청 완료!",
-                        "applied_count": new_count,
-                        "max_participants": party.max_participants,
+                        "detail": message,
+                        "participation_id": participation.id,
+                        "status": participation.status,
                     },
                     status=status.HTTP_201_CREATED
                 )
@@ -96,13 +98,35 @@ class PartyLeaveAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, party_id):
-        deleted, _ = Participation.objects.filter(party_id=party_id, user=request.user).delete()
-        if not deleted:
+        try:
+            with transaction.atomic():
+                participation = Participation.objects.select_related('party', 'user').get(
+                    party_id=party_id, 
+                    user=request.user
+                )
+                
+                party = participation.party
+                user = participation.user
+
+                # 환불 로직: 확정 상태였고, 예약금이 있었던 경우
+                if participation.status == Participation.Status.CONFIRMED and party.deposit > 0:
+                    user.points = F("points") + party.deposit
+                    user.save(update_fields=["points"])
+                    
+                    # 결제 기록이 있다면 환불 상태로 변경 (선택적)
+                    if hasattr(participation, 'payment'):
+                        payment = participation.payment
+                        payment.status = 'REFUNDED'
+                        payment.save(update_fields=['status'])
+
+                # 참여 기록 삭제
+                participation.delete()
+
+                return Response({"detail": "신청이 취소되었습니다."}, status=status.HTTP_200_OK)
+
+        except Participation.DoesNotExist:
             return Response({"detail": "신청 내역이 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 최신 인원 수를 반환
-        new_count = Participation.objects.filter(party_id=party_id).count()
-        return Response({"detail": "신청 취소 완료", "applied_count": new_count}, status=status.HTTP_200_OK)
 
 class AIPartyCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]  # AI 인증이면 토큰 필요
