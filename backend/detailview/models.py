@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.core.exceptions import ValidationError
 
 class Place(models.Model): # 장소에 대한 기본 정보 저장
     name = models.CharField(max_length=30)
