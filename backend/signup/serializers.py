@@ -8,6 +8,8 @@ User = get_user_model()
 
 class UserSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    password2 = serializers.CharField(write_only=True)  # 비밀번호 확인용
+
     email = serializers.EmailField(
         required=True,
         validators=[UniqueValidator(queryset=User.objects.all(), message="이미 사용 중인 이메일입니다.")]
@@ -19,7 +21,12 @@ class UserSignupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["username", "password", "email", "phone"]
+        fields = ["username", "password", "password2", "name", "email", "phone", "school", "student_card_image"]
+
+    def validate(self, data):
+        if data["password"] != data["password2"]:
+            raise serializers.ValidationError({"password": "비밀번호와 비밀번호 확인이 일치하지 않습니다."})
+        return data
 
     def validate_phone(self, value):
         value = value.strip()
@@ -28,12 +35,11 @@ class UserSignupSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            password=validated_data["password"],
-            email=validated_data["email"],
-            phone=validated_data["phone"],
-        )
+        validated_data.pop("password2")  # 확인용 필드는 DB에 저장할 필요 없음
+        password = validated_data.pop("password")
+        user = User.objects.create(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
     
 
