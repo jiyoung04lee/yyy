@@ -8,15 +8,21 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import SocialAccount
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 from signup.serializers import (
     KakaoLoginRequestSerializer,
     TokenPairResponseSerializer,
-    UserBriefSerializer,
+    UserBriefSerializer, # 이거 왜 정의한 것인지..
     UserSignupSerializer,
+    CustomTokenObtainPairSerializer,
 )
 
 User = get_user_model()
+
+class CustomLoginAPIView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+    
 
 class UserSignupAPIView(APIView):
     permission_classes = [AllowAny]
