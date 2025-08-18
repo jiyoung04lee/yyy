@@ -9,6 +9,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import SocialAccount
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 from signup.serializers import (
     KakaoLoginRequestSerializer,
@@ -20,8 +21,23 @@ from signup.serializers import (
 
 User = get_user_model()
 
-class CustomLoginAPIView(TokenObtainPairView):
+class CustomLoginAPIView(TokenObtainPairView): # 일반 로그인 뷰 구현
+    permission_classes = [AllowAny]
     serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        try:
+            response = super().post(request, *args, **kwargs)
+            response.data["detail"] = "로그인 성공"
+            return response
+        except TokenError as e:
+            # JWT에서 인증 실패 시
+            return Response({"detail": "로그인 실패: 아이디 또는 비밀번호가 올바르지 않습니다."},
+                            status=status.HTTP_401_UNAUTHORIZED)
+        except InvalidToken as e:
+            # 잘못된 토큰 요청 등
+            return Response({"detail": "로그인 실패: 잘못된 요청입니다."},
+                            status=status.HTTP_401_UNAUTHORIZED)
     
 
 class UserSignupAPIView(APIView):
