@@ -189,3 +189,11 @@ CELERY_BEAT_SCHEDULE = {
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
+# 웹소켓 테스팅 할 때만 활성화
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
