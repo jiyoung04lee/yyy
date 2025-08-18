@@ -96,10 +96,10 @@ class KakaoLoginAPIView(APIView):
                 "user": {
                     "id": user.id,
                     "email": user.email,
-                    "nickname": getattr(user, "nickname", ""),
+                    "name": user.name,  # nickname 대신 name
                 }
             }, status=200)
-        
+
         in_ser = KakaoLoginRequestSerializer(data=request.data)
         in_ser.is_valid(raise_exception=True)
         code = in_ser.validated_data["code"]
@@ -163,13 +163,13 @@ class KakaoLoginAPIView(APIView):
                         email=email or "",
                         password=None,
                     )
-                    # 권장: 소셜 전용 계정 명시
                     user.set_unusable_password()
                     user.save(update_fields=["password"])
 
-                    if hasattr(user, "nickname") and nickname:
-                        user.nickname = nickname
-                        user.save(update_fields=["nickname"])
+                # ✅ nickname → name 으로 매핑
+                if nickname and not user.name:
+                    user.name = nickname
+                    user.save(update_fields=["name"])
 
                 SocialAccount.objects.get_or_create(
                     user=user, provider="kakao", social_id=str(kakao_id)
@@ -181,17 +181,14 @@ class KakaoLoginAPIView(APIView):
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
 
-        # 응답을 시리얼라이저로 감싸서 스키마 고정
+        # 응답
         out = {
             "access": str(access),
             "refresh": str(refresh),
             "user": {
                 "id": user.id,
                 "email": user.email,
-                "nickname": getattr(user, "nickname", nickname),
-                # 필요하면 아래 두 줄도 프론트 디버깅용으로 노출 가능
-                # "provider": "kakao",
-                # "social_id": str(kakao_id),
+                "name": user.name,  # name 필드 통일
             }
         }
         return Response(TokenPairResponseSerializer(out).data, status=200)
