@@ -13,9 +13,42 @@ from signup.serializers import (
     KakaoLoginRequestSerializer,
     TokenPairResponseSerializer,
     UserBriefSerializer,
+    UserSignupSerializer,
 )
 
 User = get_user_model()
+
+class UserSignupAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+
+            # JWT 토큰 발급
+            refresh = RefreshToken.for_user(user)
+            access = refresh.access_token
+
+            return Response(
+                {
+                    "access": str(access),
+                    "refresh": str(refresh),
+                    "user": {
+                        "id": user.id,
+                        "username": user.username,
+                        "name": user.name,
+                        "email": user.email,
+                        "phone": user.phone,
+                        "school": user.school,
+                        "student_card_image": request.build_absolute_uri(user.student_card_image.url) if user.student_card_image else None,
+                    }
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 #테스트용 뷰        
 from django.http import HttpResponse
