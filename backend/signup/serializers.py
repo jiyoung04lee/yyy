@@ -77,7 +77,7 @@ class KakaoLoginRequestSerializer(serializers.Serializer):
 class UserBriefSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     email = serializers.EmailField(allow_blank=True, allow_null=True, required=False)
-    nickname = serializers.CharField(allow_blank=True, required=False)
+    name = serializers.CharField(allow_blank=True, required=False)
 
 class TokenPairResponseSerializer(serializers.Serializer):
     access = serializers.CharField()
