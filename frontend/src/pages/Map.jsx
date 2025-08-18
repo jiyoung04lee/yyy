@@ -21,7 +21,40 @@ export default function Map() {
 
   // 시트 높이 관리 (초기 최소)
   const [heightPct, setHeightPct] = useState(MIN_PCT);
-  const isExpanded = heightPct >= 99.5;   /* 📍 이후 네비게이션 들어오면 조정 필요  */
+  const [parties, setParties] = useState([]); //  파티 목록 데이터 상태
+  const isExpanded = heightPct >= 99.5;   /*  이후 네비게이션 들어오면 조정 필요  */
+
+  // 백엔드에서 파티 목록 데이터 가져오기
+  useEffect(() => {
+    const fetchParties = async () => {
+      try {
+        // 백엔드 API 엔드포인트 (로컬 개발 환경)
+        const response = await fetch('http://127.0.0.1:8000/api/homemap/map/');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        // API 데이터를 프론트엔드 컴포넌트 props에 맞게 변환
+        const formattedParties = data.map(p => ({
+          id: p.id,
+          eventTitle: p.title,
+          eventDate: p.start_time,
+          placeName: p.place_name,
+          attendees: p.applied_count,
+          capacity: p.max_participants,
+          placeImageUrl: p.place_photo || PartySmallImages, // 백엔드 이미지가 없으면 기본 이미지 사용
+        }));
+
+        setParties(formattedParties);
+      } catch (error) {
+        console.error("Failed to fetch parties:", error);
+        // 에러 발생 시 사용자에게 알릴 수 있는 UI 처리 (옵션)
+      }
+    };
+
+    fetchParties();
+  }, []); // 빈 배열을 전달하여 컴포넌트 마운트 시 1회만 실행
 
   // 배경 스크롤 락 (100%일 때만)
   useEffect(() => {
@@ -116,22 +149,10 @@ export default function Map() {
     setHeightPct(goingUp ? MAX_PCT : MIN_PCT);
   };
 
-  //Partysmall 컴포넌트 넣기 
-  const parties = [
-    {
-      id: 'p1',
-      eventTitle: '#유학생과_언어교류',
-      eventDate: '2025-08-25T18:00:00',
-      placeName: '주당끼리',
-      attendees: 12,
-      capacity: 20,
-      placeImageUrl: PartySmallImages, 
-    },
-    // ...더 많은 파티
-  ];
+  
 
   return (
-    <>
+    <div className="map-page-container">
     <Header/>
     <div
       ref={sheetRef}
