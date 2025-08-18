@@ -189,8 +189,11 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
-} # 웹소켓 돌아가는지 확인하기 위해 넣은 코드
+
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
