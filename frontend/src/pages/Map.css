@@ -57,3 +57,13 @@
 @media (prefers-reduced-motion: reduce) {
   .bottom-sheet { transition: none; }
 }
+
+.map-page-container {
+  width: 100%;
+  height: 100%;
+  position: relative; /* This will be the positioning context for markers later */
+  background-image: url('http://127.0.0.1:8000/static/map.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden; /* Hide anything that might spill out */
+}

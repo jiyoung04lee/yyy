@@ -192,7 +192,7 @@ export default function Map() {
       </div>
     </div>
     <NavBar/>
-    </>
+    </div>
   );
 }
 
