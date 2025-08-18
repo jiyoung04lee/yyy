@@ -6,6 +6,7 @@
 
 /* 바텀시트 본체 */
 .bottom-sheet{
+  z-index: 1000; /* 지도보다 항상 위에 있도록 보장 */
   position: absolute;
   left: 0; right: 0; bottom: 0;
   background: #fff;
@@ -62,8 +63,5 @@
   width: 100%;
   height: 100%;
   position: relative; /* This will be the positioning context for markers later */
-  background-image: url('http://127.0.0.1:8000/static/map.png');
-  background-size: cover;
-  background-position: center;
   overflow: hidden; /* Hide anything that might spill out */
 }

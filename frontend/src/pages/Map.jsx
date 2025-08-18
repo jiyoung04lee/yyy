@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import './Map.css';                 
+import LeafletMap from '../components/LeafletMap.jsx';
 import PartySmall from './PartySmall.jsx';   
 import PartySmallImages from '../assets/partysmall.jpg';
 import Header from '../components/Header.jsx';
@@ -103,6 +104,9 @@ export default function Map() {
 
   // 포인터 이벤트 핸들러 (마우스/터치 공통)
   const onPointer = (e) => {
+    // 이벤트가 지도까지 전파되는 것을 막아 드래그 기능 충돌 방지
+    e.stopPropagation();
+
     if (e.type === 'pointerdown') {
       const fromGrabber = e.target.closest('[data-grabber="true"]');
       if (isExpanded && !fromGrabber) return;
@@ -153,7 +157,8 @@ export default function Map() {
 
   return (
     <div className="map-page-container">
-    <Header/>
+      <LeafletMap />
+      <Header/>
     <div
       ref={sheetRef}
       className="bottom-sheet"
