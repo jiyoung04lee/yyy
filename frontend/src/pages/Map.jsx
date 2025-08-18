@@ -157,7 +157,7 @@ export default function Map() {
 
   return (
     <div className="map-page-container">
-      <LeafletMap />
+      <LeafletMap minSheetHeight={MIN_PCT} headerHeight={101} />
       <Header/>
     <div
       ref={sheetRef}

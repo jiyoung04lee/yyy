@@ -5,10 +5,10 @@ import 'leaflet/dist/leaflet.css';
 // 백엔드에서 제공하는 지도 이미지 경로
 const mapImageUrl = 'http://127.0.0.1:8000/static/map.png';
 // 지도 이미지 크기.
-const imageWidth = 918;
-const imageHeight = 541;
+const imageWidth = 822; //1513
+const imageHeight = 460; // 846
 
-const LeafletMap = () => {
+const LeafletMap = ({ minSheetHeight, headerHeight }) => {
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
 
@@ -18,26 +18,27 @@ const LeafletMap = () => {
 
     // 지도를 담을 컨테이너가 필요
     if (mapRef.current) {
-      // L.CRS.Simple을 사용하여 평면 이미지에 대한 좌표계를 설정.
-      // 이를 통해 간단한 [y, x] 좌표를 사용할 수 있음.
       // 이미지 경계를 정의. 좌표는 [y, x] 형식.
       const bounds = [[0, 0], [imageHeight, imageWidth]];
 
       mapInstance.current = L.map(mapRef.current, {
         crs: L.CRS.Simple,
-        minZoom: -2, // 필요에 따라 줌 레벨 조정
         zoomControl: false, // 확대/축소 버튼 비활성화
         maxBounds: bounds, // 맵 이동을 이미지 경계로 제한
         maxBoundsViscosity: 1.0, // 경계 밖으로 드래그 방지
+        attributionControl: false, // Leaflet 저작권 표시 제거
       });
 
       const map = mapInstance.current;
-      
+
       // 이미지 오버레이를 생성하여 지도에 추가
       L.imageOverlay(mapImageUrl, bounds).addTo(map);
 
-      // 초기 뷰를 이미지 중앙으로 설정하고 줌 레벨을 0으로 지정
-      map.setView([imageHeight / 2, imageWidth / 2], 0);
+      // 지도 뷰를 이미지 경계에 딱 맞게 설정 (패딩 없이)
+      map.fitBounds(bounds, { padding: [0, 0] });
+
+      // 현재 줌 레벨을 최소 줌 레벨로 설정하여 더 이상 축소되지 않도록 함
+      map.setMinZoom(map.getZoom());
     }
 
     // 컴포넌트가 언마운트될 때 맵 인스턴스를 파괴하는 정리 함수
@@ -49,7 +50,7 @@ const LeafletMap = () => {
     };
   }, []);
 
-  return <div ref={mapRef} style={{ width: '100%', height: '100%' }} />;
+  return <div ref={mapRef} style={{ position: 'absolute', top: `${headerHeight}px`, left: 0, right: 0, bottom: `${minSheetHeight}%` }} />;
 };
 
 export default LeafletMap;
