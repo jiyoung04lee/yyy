@@ -3,8 +3,28 @@ from rest_framework import serializers
 import re
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer): # 일반 로그인 시 사용
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+
+        data["refresh"] = str(refresh)
+        data["access"] = str(refresh.access_token)
+
+        # 로그인 성공 시 최소한의 user 정보만 내려주기
+        data["user"] = {
+            "id": self.user.id,
+            "username": self.user.username,
+            "name": self.user.name,
+            "email": self.user.email,
+        }
+
+        return data
+    
 
 class UserSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
