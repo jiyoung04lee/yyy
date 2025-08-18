@@ -152,9 +152,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 STATICFILES_DIRS = [
     BASE_DIR / 'config' / 'static',  # 직접 만든 static 폴더
 ]
@@ -189,11 +186,6 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-
-import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
