@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'users',
     'reserve',
     'corsheaders',
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -164,3 +165,32 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ASGI_APPLICATION = "config.asgi.application" 
+
+# Redis 사용 (실시간 메시지 브로커)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+CELERY_BEAT_SCHEDULE = {
+    "party_open_1day_notices": {
+        "task": "notice.tasks.create_party_open_notices",
+        "schedule": 3600.0,  # 1시간마다 실행
+    },
+    "party_insufficient_notices": {
+        "task": "notice.tasks.create_insufficient_party_notices",
+        "schedule": 3600.0,  # 1시간마다 실행
+    },
+}
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+} # 웹소켓 돌아가는지 확인하기 위해 넣은 코드
