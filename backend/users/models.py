@@ -19,7 +19,7 @@ class User(AbstractUser):
     profile_image = models.ImageField("프로필 사진", upload_to="profiles/", blank=True, null=True)
 
     # 활동 관련
-    points = models.PositiveIntegerField("포인트", default=0)
+    points = models.PositiveIntegerField("포인트", default=10000)
     warnings = models.PositiveIntegerField("경고 횟수", default=0)
 
     def __str__(self):

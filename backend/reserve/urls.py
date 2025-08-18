@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import CreatePaymentView
+from .views import JoinAndReserveView
 
 app_name = "reserve"
 
 urlpatterns = [
-    path("pay/", CreatePaymentView.as_view(), name="create-payment"), # 예약금 결제 처리 기능 API
+    path("join/", JoinAndReserveView.as_view(), name="join-and-reserve"),
 ]
