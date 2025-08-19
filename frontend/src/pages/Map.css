@@ -41,7 +41,8 @@
 /* 내부 스크롤 영역 */
 .bottom-sheet .sheet-scroll{
   flex: 1;
-  overflow: auto;
+  overflow-x: hidden; /* 가로 스크롤바 숨김 */
+  overflow-y: hidden; /* 세로 스크롤바는 유지 */
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
 }
@@ -64,4 +65,8 @@
   height: 100%;
   position: relative; /* This will be the positioning context for markers later */
   overflow: hidden; /* Hide anything that might spill out */
+}
+
+.sheet-scroll {
+  overscroll-behavior: contain;
 }
