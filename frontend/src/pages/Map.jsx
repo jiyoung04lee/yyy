@@ -15,8 +15,8 @@ export default function Map() {
   const stageHRef = useRef(1);            // 부모 높이(px) 캐시
 
   // 두 상태 스냅(최소/전체)
-  const MIN_PCT = 35;                     // 최저 높이(%)
-  const MAX_PCT = 90;                    // 최고 높이(%)
+  const MIN_PCT = 32;                     // 최저 높이(%)
+  const MAX_PCT = 76.3;                    // 최고 높이(%)
   const MID_THRESHOLD = (MIN_PCT + MAX_PCT) / 2; // 중앙 임계치(기본 65)
   const MID_BAND = 4;                     // 중앙 밴드(%): 전환 히스테리시스
 

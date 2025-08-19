@@ -2,15 +2,21 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// 메인 지도 이미지 경로 (이제 이 이미지가 전체 배경을 포함)
-const mapImageUrl = 'http://127.0.0.1:8000/static/full_area_map.png';
+// 메인 지도 이미지 경로
+const mapImageUrl = 'http://127.0.0.1:8000/static/map.png';
 // 지도 이미지 크기 (새로운 전체 이미지 크기)
-const imageWidth = 1857;
-const imageHeight = 912;
+const imageWidth = 822; // 822
+const imageHeight = 460; // 460
 
 // 원본 map.png의 크기 (마커 위치 계산용)
 const originalMapWidth = 822;
 const originalMapHeight = 460;
+
+// 배경 지도 이미지 경로 (더 넓은 영역을 커버)
+const backgroundMapImageUrl = 'http://127.0.0.1:8000/static/full_area_map.png';
+// 배경 지도 이미지 크기 (이전의 full_area_map.png 크기)
+const backgroundMapWidth = 3704; // 1857
+const backgroundMapHeight = 1824; // 912
 
 // 커스텀 아이콘 정의
 const partyIcon = L.icon({
@@ -41,7 +47,8 @@ const LeafletMap = ({ minSheetHeight, headerHeight, parties }) => { // parties p
 
       // 높이 기준으로 화면을 채우도록 스케일 계산 (새로운 전체 이미지 기준)
       const scale = containerHeight / imageHeight;
-      const initialZoom = Math.log2(scale);
+      const zoomOffset = 0;
+      const initialZoom = Math.log2(scale) + zoomOffset;
 
       mapInstance.current = L.map(mapRef.current, {
         crs: L.CRS.Simple,
@@ -55,13 +62,27 @@ const LeafletMap = ({ minSheetHeight, headerHeight, parties }) => { // parties p
 
       const map = mapInstance.current;
 
-      // 하나의 이미지 오버레이만 사용
+      // 배경 지도 오버레이 (더 넓은 영역을 커버)
+      // 배경 지도의 bounds는 메인 지도의 좌표계에 맞춰서 설정해야 함
+      // 예를 들어, 메인 지도가 배경 지도의 중앙에 위치한다고 가정
+      const bgOffsetTop = (backgroundMapHeight - imageHeight) / 0.2 - 6250; // 배경 이미지의 상단 오프셋
+      const bgOffsetLeft = (backgroundMapWidth - imageWidth) / 0.2 - 12870; // 배경 이미지의 왼쪽 오프셋
+
+      const backgroundBoundsAdjusted = [
+        [-bgOffsetTop, -bgOffsetLeft],
+        [backgroundMapHeight - bgOffsetTop, backgroundMapWidth - bgOffsetLeft]
+      ];
+
+
+      L.imageOverlay(backgroundMapImageUrl, backgroundBoundsAdjusted, { zIndex: 1 }).addTo(map);
+
+      // 메인 지도 오버레이
       L.imageOverlay(mapImageUrl, bounds, { zIndex: 2 }).addTo(map);
 
       // 계산된 줌 레벨과 이미지 중앙으로 뷰를 설정
       map.setView([imageHeight / 2, imageWidth / 2], initialZoom);
     }
-
+    
     // 컴포넌트가 언마운트될 때 맵 인스턴스를 파괴하는 정리 함수
     return () => {
       if (mapInstance.current) {
