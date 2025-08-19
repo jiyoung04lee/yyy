@@ -15,8 +15,9 @@ export default function Map() {
   const stageHRef = useRef(1);            // 부모 높이(px) 캐시
 
   // 두 상태 스냅(최소/전체)
-  const MIN_PCT = 32;                     // 최저 높이(%)
-  const MAX_PCT = 76.3;                    // 최고 높이(%)
+  const MIN_PCT = 14;                     // 시트 최저 높이(%)
+  const MAX_PCT = 76;                    // 시트 최고 높이(%)
+  const MAP_BOTTOM_MARGIN_PCT = 25;       // 지도 하단 여백(%)
   const MID_THRESHOLD = (MIN_PCT + MAX_PCT) / 2; // 중앙 임계치(기본 65)
   const MID_BAND = 4;                     // 중앙 밴드(%): 전환 히스테리시스
 
@@ -157,7 +158,7 @@ export default function Map() {
 
   return (
     <div className="map-page-container">
-      <LeafletMap minSheetHeight={MIN_PCT} headerHeight={101} parties={parties} />
+      <LeafletMap minSheetHeight={MAP_BOTTOM_MARGIN_PCT} headerHeight={101} parties={parties} />
       <Header/>
     <div
       ref={sheetRef}
