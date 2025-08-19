@@ -37,6 +37,8 @@ export default function Notifications() {
         </div>
         <div className="notification-divider"></div>
       </div>
+
+      <div className='spaceExpansion'></div>
     </>
   );
 }
