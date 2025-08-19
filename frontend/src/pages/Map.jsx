@@ -15,7 +15,7 @@ export default function Map() {
   const stageHRef = useRef(1);            // 부모 높이(px) 캐시
 
   // 두 상태 스냅(최소/전체)
-  const MIN_PCT = 14;                     // 시트 최저 높이(%)
+  const MIN_PCT = 22;                     // 시트 최저 높이(%)
   const MAX_PCT = 76;                    // 시트 최고 높이(%)
   const MAP_BOTTOM_MARGIN_PCT = 25;       // 지도 하단 여백(%)
   const MID_THRESHOLD = (MIN_PCT + MAX_PCT) / 2; // 중앙 임계치(기본 65)
@@ -31,24 +31,24 @@ export default function Map() {
     const fetchParties = async () => {
       try {
         // 백엔드 API 엔드포인트 (로컬 개발 환경)
-        const response = await fetch('http://127.0.0.1:8000/api/homemap/map/');
+        const response = await fetch('http://127.0.0.1:8000/api/detailview/parties/');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
         
         // API 데이터를 프론트엔드 컴포넌트 props에 맞게 변환
-        const formattedParties = data.map(p => ({
-          id: p.id,
-          eventTitle: p.title,
-          eventDate: p.start_time,
-          placeName: p.place_name,
-          attendees: p.applied_count,
-          capacity: p.max_participants,
-          placeImageUrl: p.place_photo || PartySmallImages, // 백엔드 이미지가 없으면 기본 이미지 사용
-        }));
+        // const formattedParties = data.map(p => ({
+        //   id: p.id,
+        //   eventTitle: p.title,
+        //   eventDate: p.start_time,
+        //   placeName: p.place_name,
+        //   attendees: p.applied_count,
+        //   capacity: p.max_participants,
+        //   placeImageUrl: p.place_photo || PartySmallImages, // 백엔드 이미지가 없으면 기본 이미지 사용
+        // }));
 
-        setParties(formattedParties);
+        setParties(data);
       } catch (error) {
         console.error("Failed to fetch parties:", error);
         // 에러 발생 시 사용자에게 알릴 수 있는 UI 처리 (옵션)
