@@ -21,9 +21,9 @@ const backgroundMapHeight = 1824; // 912
 // 커스텀 아이콘 정의
 const partyIcon = L.icon({
   iconUrl: 'http://127.0.0.1:8000/static/partyicon.png', // 아이콘 이미지 경로
-  iconSize: [32, 32], // 아이콘 크기
-  iconAnchor: [16, 32], // 아이콘의 '뾰족한' 부분이 마커 위치에 오도록 조정 (아이콘 크기의 절반, 전체 높이)
-  popupAnchor: [0, -32], // 팝업이 아이콘 위에 표시되도록 조정
+  iconSize: [64, 64], // 아이콘 크기
+  iconAnchor: [32, 64], // 아이콘의 '뾰족한' 부분이 마커 위치에 오도록 조정 (아이콘 크기의 절반, 전체 높이)
+  popupAnchor: [0, -64], // 팝업이 아이콘 위에 표시되도록 조정
 });
 
 
