@@ -32,6 +32,7 @@ class Party(models.Model): # AI와 Place를 연결하여 랜덤으로 파티 생
     start_time = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True) # created_at을 기준으로 start_time이 더 이후여야 함
     is_approved = models.BooleanField(default=True)  # 해커톤에선 기본 True
+    is_cancelled = models.BooleanField(default=False)  # ✅ 취소 여부
     
     def __str__(self): return f"{self.title} @ {self.place.name}"
 
@@ -44,9 +45,13 @@ class Participation(models.Model): # 개별 파티마다의 참여자 저장
 
     party = models.ForeignKey(Party, on_delete=models.CASCADE, related_name="participations")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="party_participations")
+    is_standby = models.BooleanField(default=False) # 파티 보조 화면에서 게임 참여 on-off 관리
     status = models.CharField("상태", max_length=20, choices=Status.choices, default=Status.PENDING_PAYMENT) # 결제 대기 상태로 시작
     created_at = models.DateTimeField(auto_now_add=True) # 참여 신청 시각 (이걸기반으로 결제 대기 시간 제한)
     paid_at = models.DateTimeField("결제일시", null=True, blank=True) # 결제 완료 시각
 
     class Meta:
-        unique_together = ("party", "user")  # 중복 신청 방지
+        constraints = [
+            models.UniqueConstraint(fields=['party', 'user'], name='unique_participation_per_party')
+        ]
+        
