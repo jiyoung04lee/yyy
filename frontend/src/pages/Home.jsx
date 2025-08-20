@@ -39,10 +39,10 @@ export default function Home() {
 
       {partyList.map((party) => (
         <div className="party-block" key={party.id}>
-          <Link to="/notifications" aria-label="알림">
+          <Link to="/partyinfo" aria-label="파티 정보">
             <div className="party-img-wrap">
               <img src={party.image} alt="" className="party-img" draggable="false" />
-              <div className="party-badge">
+              <div className="location-badge">
                 <img src={Location} alt="위치 아이콘" />
                 <span>{party.location}</span>
               </div>
