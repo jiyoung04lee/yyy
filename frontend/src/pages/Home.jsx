@@ -17,7 +17,7 @@ export default function Home() {
   useEffect(() => {
     const fetchParties = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/detailview/parties/");
+        const response = await fetch("http://127.0.0.1:8000/api/homemap/home/");
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
 
