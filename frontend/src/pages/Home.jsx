@@ -68,7 +68,7 @@ export default function Home() {
           </button>
           
           {showPopup && (
-            <div className="popup-overtlay" onClick={() => setShowPopup(false)}>
+            <div className="popup-overlay" onClick={() => setShowPopup(false)}>
               <img src={PopupImg} al="팝업" className="popup-img" />
             </div>
           )}
