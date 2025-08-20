@@ -55,17 +55,19 @@ export default function Map() {
         const data = await response.json();
         
         // API 데이터를 프론트엔드 컴포넌트 props에 맞게 변환
-        // const formattedParties = data.map(p => ({
-        //   id: p.id,
-        //   eventTitle: p.title,
-        //   eventDate: p.start_time,
-        //   placeName: p.place_name,
-        //   attendees: p.applied_count,
-        //   capacity: p.max_participants,
-        //   placeImageUrl: p.place_photo || PartySmallImages, // 백엔드 이미지가 없으면 기본 이미지 사용
-        // }));
+        const formattedParties = data.map(p => ({
+          id: p.id,
+          eventTitle: p.title,
+          eventDate: p.start_time,
+          placeName: p.place_name,
+          attendees: p.applied_count,
+          capacity: p.max_participants,
+          placeImageUrl: p.place_photo || PartySmallImages, // 백엔드 이미지가 없으면 기본 이미지 사용
+          place_x_norm: p.place_x_norm,   
+          place_y_norm: p.place_y_norm,
+        }));
 
-        setParties(data);
+        setParties(formattedParties);
       } catch (error) {
         console.error("Failed to fetch parties:", error);
         // 에러 발생 시 사용자에게 알릴 수 있는 UI 처리 (옵션)
