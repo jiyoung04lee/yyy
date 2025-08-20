@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from '../components/Header';
 import NavBar from '../components/NavBar';
 import Party from '../assets/party.jpg';
@@ -11,26 +11,37 @@ import PopupImg from '../assets/bell.svg';
 import './home.css';
 
 export default function Home() {
-  // 테스트용 임시 데이터 2개
-  const [partyList, setPartyList] = useState([
-    {
-      id: 1,
-      image: Party,
-      name: "#유학생과_언어교류",
-      date: "08.25. 18:00",
-      person: "12/20",
-      location: "주당끼리",
-    },
-    {
-      id: 2,
-      image: Date,
-      name: "#주말_보드게임",
-      date: "08.26. 15:00",
-      person: "8/10",
-      location: "홍대입구",
-    },
-  ]);
+  const [partyList, setPartyList] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
+  
+  useEffect(() => {
+    const fetchParties = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/detailview/parties/");
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+
+        const formatted = data.map(p => ({
+          id: p.id,
+          image: p.place_photo || Party,
+          name: "#" + p.title,
+          date: new Date(p.start_time).toLocaleString("ko-KR", {
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          person: `${p.applied_count}/${p.max_participants}`,
+          location: p.place_name,
+        }));
+        setPartyList(formatted);
+      } catch (error) {
+        console.error("파티 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchParties();
+  }, []);
 
   return (
     <>

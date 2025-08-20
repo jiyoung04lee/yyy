@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import Home from "./pages/Home.jsx";
+import Home from "./pages/Home.jsx";
 // import Notifications from "./pages/Notifications.jsx";
 import Map from "./pages/Map.jsx";
 // import Assist from "./pages/Assist.jsx";
@@ -13,8 +13,8 @@ export default function App() {
     <BrowserRouter>
       <AppFrame>
         <Routes>
-          {/* <Route index element={<Home />} />
-          <Route path="/notifications" element={<Notifications />} /> */}
+          <Route index element={<Home />} />
+          {/* <Route path="/notifications" element={<Notifications />} /> */}
           <Route path="/map" element={<Map />} />
           {/* <Route path="/assist" element={<Assist />} />
           <Route path="/mypage" element={<Mypage />} /> */}
