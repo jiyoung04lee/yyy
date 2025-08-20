@@ -70,20 +70,27 @@
 .date {
   margin-top: 13px;
   margin-left: 19.5px;
+  display: flex;
+  align-items: center;
 }
 
 .dateText {
   margin-left: 10px;
   font-family: Pretendard;
-  font-weight: 400; /* Regular weight */
+  font-weight: 400;
   font-size: 16px;
-  line-height: 150%; /* 1.5배 */
+  line-height: 150%;
   letter-spacing: -1.9%;
+  position: relative;
+  top: 3px;
+
 }
 
 .person {
   margin-top: 13px;
   margin-left: 19.5px;
+  display: flex;
+  align-items: center;
 }
 
 .apply-btn {
