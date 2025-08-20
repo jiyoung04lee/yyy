@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Header from '../components/Header';
 import NavBar from '../components/NavBar';
 import Party from '../assets/party.jpg';
-import Date from '../assets/date.svg';
+import DateIcon from '../assets/date.svg';
 import Check from '../assets/check.svg';
 import Apply from '../assets/apply.svg';
 import Location from '../assets/location.svg';
@@ -62,7 +62,7 @@ export default function Home() {
 
           <div className='partyName'>{party.name}</div>
           <div className='date'>
-            <img src={Date} alt="" />
+            <img src={DateIcon} alt="" />
             <span className="dateText">{party.date}</span>
           </div>
           <div className='person'>
@@ -80,7 +80,7 @@ export default function Home() {
           
           {showPopup && (
             <div className="popup-overlay" onClick={() => setShowPopup(false)}>
-              <img src={PopupImg} al="팝업" className="popup-img" />
+              <img src={PopupImg} alt="팝업" className="popup-img" />
             </div>
           )}
         </div>
