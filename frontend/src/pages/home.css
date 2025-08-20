@@ -30,7 +30,7 @@
   border-radius: 8px;
 }
 
-.party-badge {
+.location-badge {
   position: absolute;
   top: 8px;
   left: 8px;
@@ -41,13 +41,13 @@
   padding: 4px 10px;
 }
 
-.party-badge img {
+.location-badge img {
   width: 20px;
   height: 20px;
   margin-right: 6px;
 }
 
-.party-badge span {
+.location-badge span {
   margin-top: 4px;
   margin-right: 6px;
   font-family: Pretendard;
@@ -102,3 +102,5 @@
 .spaceExpansion {
   margin-top: 180px; /*아래로 끝까지 스크롤 해도 요소들이 다 보일 수 있도록 공간을 띄움*/
 }
+
+
