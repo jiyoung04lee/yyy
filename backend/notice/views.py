@@ -7,10 +7,14 @@ from .serializers import NoticeSerializer
 import time, json
 from django.http import StreamingHttpResponse
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.db import close_old_connections
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-@login_required
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([SessionAuthentication, JWTAuthentication]) 
 def notice_stream(request):
     def event_stream():
         last_check = timezone.now()
