@@ -5,6 +5,4 @@ from .views import NoticeViewSet, notice_stream
 router = DefaultRouter()
 router.register(r"", NoticeViewSet, basename="notice")
 
-urlpatterns = router.urls + [
-    path("stream/", notice_stream, name="notice-stream"),
-]
+urlpatterns = router.urls 
