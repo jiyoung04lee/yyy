@@ -8,43 +8,73 @@ export default function Notifications() {
   const [notices, setNotices] = useState([]);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
 
-  useEffect(() => {
-    const fetchNotices = async () => {
-      try {
-        const token = localStorage.getItem("access");
-        if (!token) {
-          setShowLoginPopup(true);
-          return;
-        }
-
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/notice/upcoming/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (response.status === 401) {
-          setShowLoginPopup(true);
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`HTTP error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setNotices(data);
-      } catch (error) {
-        console.error("알림 데이터를 불러오는 중 오류 발생:", error);
+  const fetchNotices = async () => {
+    try {
+      const token = localStorage.getItem("access");
+      if (!token) {
         setShowLoginPopup(true);
+        return;
       }
-    };
 
+      // 1. API 엔드포인트를 DB 기반 알림을 가져오도록 변경
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/notice/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 401) {
+        setShowLoginPopup(true);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setNotices(data);
+    } catch (error) {
+      console.error("알림 데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchNotices();
   }, []);
+
+  // 2. 알림 읽음 처리 함수 추가
+  const handleNoticeClick = async (noticeId) => {
+    // 이미 읽은 알림은 다시 처리하지 않음
+    const notice = notices.find(n => n.id === noticeId);
+    if (notice && notice.is_read) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("access");
+      await fetch(`http://127.0.0.1:8000/api/notice/${noticeId}/`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ is_read: true }),
+      });
+
+      // 3. UI에서 즉시 '읽음' 상태로 업데이트
+      setNotices((prevNotices) =>
+        prevNotices.map((n) =>
+          n.id === noticeId ? { ...n, is_read: true } : n
+        )
+      );
+    } catch (error) {
+      console.error("알림 읽음 처리 중 오류 발생:", error);
+    }
+  };
 
   return (
     <>
@@ -59,7 +89,6 @@ export default function Notifications() {
         <span className="notifications-title">알림</span>
       </div>
 
-      {/* 로그인 안내 팝업 */}
       {showLoginPopup && (
         <div className="popup-overlay">
           <div className="popup-box">
@@ -82,19 +111,24 @@ export default function Notifications() {
         </div>
       )}
 
-      {/* 알림 목록 */}
+      {/* 4. 새로운 데이터 구조에 맞게 알림 목록 UI 수정 */}
       {!showLoginPopup &&
         (notices.length === 0 ? (
           <div className="notification-empty">새 알림이 없습니다.</div>
         ) : (
           notices.map((notice) => (
-            <div key={notice.party_id} className="notification-block">
+            <div
+              key={notice.id}
+              // 5. 읽음/안읽음 상태에 따라 클래스 부여 및 클릭 이벤트 추가
+              className={`notification-block ${notice.is_read ? 'read' : 'unread'}`}
+              onClick={() => handleNoticeClick(notice.id)}
+            >
               <div className="notifications-content">
                 <div>{notice.message}</div>
               </div>
               <div className="notifications-day">
                 <div>
-                  {new Date(notice.start_time).toLocaleString("ko-KR", {
+                  {new Date(notice.created_at).toLocaleString("ko-KR", {
                     month: "2-digit",
                     day: "2-digit",
                     hour: "2-digit",

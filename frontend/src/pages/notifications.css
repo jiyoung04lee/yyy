@@ -118,3 +118,9 @@
 .popup-box button:last-of-type {
   background-color: #ddd;
 }
+
+/* 읽은 알림 스타일 */
+.notification-block.read {
+  opacity: 0.6;
+  cursor: default;
+}
