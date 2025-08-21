@@ -72,3 +72,49 @@
   background: var(--grayscale200, #DDD);
   border-radius: 1px;
 }
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* 반투명 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 다른 요소보다 위 */
+}
+
+/* 팝업 박스 */
+.popup-box {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 300px;
+  text-align: center;
+}
+
+.popup-box p {
+  margin-bottom: 15px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.popup-box button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.popup-box button:first-of-type {
+  background-color: #FF6B00; /* Button color */
+  border-radius: 8px; /* Rounded corners */
+  color: white;
+}
+
+.popup-box button:last-of-type {
+  background-color: #ddd;
+}
