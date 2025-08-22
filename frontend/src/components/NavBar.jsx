@@ -43,7 +43,7 @@ export default function NavBar() {
           left: 0,
           top: 0,
           width: '393px',
-          height: '101px',
+          height: '80px',
           zIndex: 0,
           pointerEvents: 'none',
         }}
