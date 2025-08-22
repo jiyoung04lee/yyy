@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Home from "./pages/Home.jsx";
 import Notifications from "./pages/Notifications.jsx";
 import Map from "./pages/Map.jsx";
@@ -9,15 +10,30 @@ import KakaoLoginPage from "./pages/KakaoLoginPage.jsx";
 import KakaoCallbackPage from "./pages/KakaoCallbackPage.jsx";
 
 export default function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // 앱 시작 시 localStorage에서 토큰 확인
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+  
   return (
     <BrowserRouter>
       <AppFrame>
         <Routes>
           <Route index element={<Home />} />
-          <Route path="/notifications" element={<Notifications />} />
-          <Route path="/map" element={<Map />} />
+          <Route 
+            path="/notifications" 
+            element={
+              isLoggedIn ? <Notifications /> : <KakaoLoginPage />
+            } 
+          />
           {/* <Route path="/assist" element={<Assist />} />
           <Route path="/mypage" element={<Mypage />} /> */}
+          <Route path="/map" element={<Map />} />
           <Route path="/kakao-login" element={<KakaoLoginPage />} />
           <Route path="/oauth/kakao/callback" element={<KakaoCallbackPage />} />
         </Routes>
