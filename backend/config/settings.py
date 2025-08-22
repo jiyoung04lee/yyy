@@ -82,7 +82,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://3.34.135.176",
     "https://partyboom.online",#구매한 도메인
     "https://www.partyboom.online", 
-    "https://yyy-jf5hspm0k-jiyoung04lees-projects.vercel.app"
+    "https://yyy-coxlzwbjb-jiyoung04lees-projects.vercel.app"
 ]
 
 SIMPLE_JWT = {
