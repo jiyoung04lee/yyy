@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+
 import { useParams, useNavigate } from 'react-router-dom';
 import Back from "../assets/left_white.svg";
 import UserIcon from '../assets/profilesmall.svg'; // 올바른 기본 아이콘 import

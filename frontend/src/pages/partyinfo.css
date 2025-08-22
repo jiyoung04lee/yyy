@@ -1,4 +1,5 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
 :root{
   --frame-max: 393px;          /* 최대 프레임 폭 */
   --side-gap: 16px;            /* 좌우 여백 */
