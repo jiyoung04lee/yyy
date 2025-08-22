@@ -1,35 +1,56 @@
-/* ===== 모바일 강제 오버라이드 (JS가 붙인 .mobile 클래스 기준) ===== */
-html.mobile .viewport-lock{
-  position: static !important;
-  inset: auto !important;
-  display: block !important;
-  background: #fff !important;
+/* 기본 리셋 */
+html, body, #root {
+  height: 100%;
+  margin: 0;
 }
 
-html.mobile .phone{
-  width: 100% !important;
-  max-width: 100% !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-
-  /* 주소/툴바 변동 대응 */
-  height: 100vh !important;         /* 기본 */
-}
-@supports (height: 100svh){
-  html.mobile .phone{ height: 100svh !important; }
-}
-@supports (height: 100dvh){
-  html.mobile .phone{ height: 100dvh !important; }
-}
-/* iOS 구형 사파리 보정 */
-@supports (-webkit-touch-callout: none){
-  html.mobile .phone{ min-height: -webkit-fill-available !important; }
+/* 📍 수정: body에 safe area 패딩 적용 */
+body { 
+  overflow: hidden; 
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
-html.mobile .app-scroll{
-  padding-top: env(safe-area-inset-top) !important;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
-  padding-left: env(safe-area-inset-left) !important;
-  padding-right: env(safe-area-inset-right) !important;
+/* 화면 중앙에 프레임 고정 */
+.viewport-lock {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #fff;  
+  /* 📍 추가: 화면 중앙 정렬을 위한 최소 높이 설정 */
+  min-height: 100vh; /* 브라우저 뷰포트 높이 */
+}
+
+/* 프레임을 유동적으로 조절 */
+.phone {
+  /* 📍 수정: 너비를 유동적으로 (100%), 최대 너비는 393px로 고정 */
+  width: 100%; 
+  max-width: 393px; 
+  /* 📍 수정: 높이를 100dvh로 설정하여 동적 뷰포트 높이 사용 */
+  height: 100dvh; 
+  max-height: 852px; /* 📍 수정: 최대 높이 설정 */
+
+  /* 📍 추가: 화면 비율을 유지하며 크기를 조절합니다. (선택 사항, 필요시 주석 해제) */
+  /* aspect-ratio: 393 / 852; */ 
+
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* 내부 스크롤 영역 */
+.app-scroll {
+  flex: 1;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
