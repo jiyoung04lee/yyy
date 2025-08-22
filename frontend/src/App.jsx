@@ -8,6 +8,7 @@ import Map from "./pages/Map.jsx";
 import AppFrame from './components/AppFrame.jsx';
 import KakaoLoginPage from "./pages/KakaoLoginPage.jsx";
 import KakaoCallbackPage from "./pages/KakaoCallbackPage.jsx";
+import Partyinfo from "./pages/Partyinfo.jsx";
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/map" element={<Map />} />
           <Route path="/kakao-login" element={<KakaoLoginPage />} />
           <Route path="/oauth/kakao/callback" element={<KakaoCallbackPage />} />
+          <Route path="/partyinfo/:partyId" element={<Partyinfo />} />
         </Routes>
       </AppFrame>
     </BrowserRouter>
