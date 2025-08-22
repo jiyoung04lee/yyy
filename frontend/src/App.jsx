@@ -10,6 +10,7 @@ import KakaoLoginPage from "./pages/KakaoLoginPage.jsx";
 import KakaoCallbackPage from "./pages/KakaoCallbackPage.jsx";
 import Partyinfo from "./pages/Partyinfo.jsx";
 
+
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
