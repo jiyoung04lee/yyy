@@ -30,6 +30,7 @@ export default function Map() {
   const pulledDown = useRef(false);
   const dyAccum = useRef(0);
 
+  
   // 두 상태 스냅(최소/전체)
   const MIN_PCT = 25;                     // 시트 최저 높이(%)
   const MAX_PCT = 76;                    // 시트 최고 높이(%)
